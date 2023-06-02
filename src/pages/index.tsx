@@ -23,7 +23,7 @@ export default Home;
 
 const AuthShowcase: React.FC = () => {
 
-  const sessionData = useSession()
+  const {data: sessionData} = useSession()
 
   const { mutate, data } = api.example.getSuggestions.useMutation()
 
