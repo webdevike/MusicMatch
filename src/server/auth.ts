@@ -46,7 +46,36 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   },
+  events: {
+    async signIn({
+      user,
+      account
+    }) {
+
+      const dbUser = await prisma.user.findFirst({
+        where: {
+          id: user.id,
+        },
+        select: {
+          accounts: true
+        }
+      })
+
+      
+      if (dbUser?.accounts[0]?.id) {
+        await prisma.account.update({
+          where: {
+            id: dbUser?.accounts[0]?.id,
+          },
+          data: {
+            access_token: account?.access_token
+          }
+        })
+      }
+    }
+  },
   adapter: PrismaAdapter(prisma),
+
   providers: [
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,

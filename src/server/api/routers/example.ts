@@ -25,17 +25,54 @@ export const exampleRouter = createTRPCRouter({
   }),
 
   getSuggestions: protectedProcedure.input(z.object({
-    text: z.string()
-  })).mutation(async () => {
-    const api = new ChatGPTAPI({
-      apiKey: env.OPENAI_API_KEY
+    text: z.string(),
+  })).mutation(async ({ ctx, input }) => {
+
+    // https://github.com/transitive-bullshit/chatgpt-api/blob/main/demos/demo-conversation.ts for multiple contextual prompts
+
+    const account = await ctx.prisma.account.findFirst({
+      where: {
+        user: {
+          id: ctx.session.user.id
+        }
+      }
     })
 
-    const res = await api.sendMessage('Provide me suggestions based on the following music I like. Bad suns, fleet foxes, Cautious Clay. Please respond in JSON format. The key name should be "artists" the values should be an array.')
+    const accessToken = account?.access_token
+
+
+    const api = new ChatGPTAPI({
+      apiKey: env.OPENAI_API_KEY,
+    })
+
+    const res = await api.sendMessage(
+      `${input.text} Please respond in JSON format. The key name should be "artists" the values should be an array of objects. The object should have the following values. name: string, description: string. Respond with at least 10 results if you can.`
+    )
     const data = JSON.parse(res.text)
 
-    
-    
-    return data
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const promises: Promise<unknown>[] = data?.artists.map(async (artist: string) => {
+      const apiUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(artist.name)}&type=artist`;
+      const query: string = encodeURIComponent(artist.name);
+      const response = await fetch(`${apiUrl}&q=${query}`, {
+        headers: {
+          'Authorization': `Bearer ${accessToken as string}`
+        }
+      });
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const res = await response.json();
+      const spotifyArtist = res?.artists?.items[0];
+
+  
+      
+      return spotifyArtist;
+    });
+
+    const results: any[] = await Promise.all(promises);
+
+
+    return results
   })
 });
