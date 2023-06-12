@@ -3,6 +3,13 @@ import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
 import { api } from "@/utils/api";
 import "@/styles/globals.css";
+import {Poppins} from '@next/font/google'
+
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  variable: '--font-poppins'
+})
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -10,7 +17,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <Component {...pageProps} />
+      <main className={`${poppins.variable} font-sans`}>
+        <Component {...pageProps} />
+      </main>
     </SessionProvider>
   );
 };

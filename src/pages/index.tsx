@@ -25,9 +25,9 @@ const AuthShowcase: React.FC = () => {
 
   const {data: sessionData} = useSession()
 
-  const { mutate, data } = api.example.getSuggestions.useMutation()
+  const { mutate, data, isLoading  } = api.example.getSuggestions.useMutation()
 
-  const [prompt, setPrompt] = useState('Bands like Polyphia')
+  const [prompt, setPrompt] = useState('')
 
 
   const testing = () => {
@@ -38,24 +38,24 @@ const AuthShowcase: React.FC = () => {
 
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4 h-screen">
+    <div className="flex flex-col items-center justify-center gap-4 mt-24 ">
       <button
-        className="rounded-md bg-blue-500 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
+        className="rounded-md bg-blue-500 px-10 py-3 font-semibold text-white"
         onClick={sessionData ? () => void signOut() : () => void signIn()}
       >
         {sessionData ? "Sign out" : "Sign in"}
       </button>
-      <div className="flex gap-4 w-full max-w-md">
-        <textarea className="block w-full  p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" onChange={(e) => setPrompt(e.target.value)} value={prompt} />
-        <button onClick={testing} className="bg-teal-500 text-white py-2 px-6 rounded-md">Submit</button>
+      <div className="flex gap-4 w-full max-w-xl relative">
+        <textarea rows={4} placeholder="Example: Recommend me some upbeat music to code to. I don't want any lyrics though." className="block w-full  p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 sm:text-md focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 pr-20" onChange={(e) => setPrompt(e.target.value)} value={prompt} />
+        <button onClick={testing} className="bg-teal-500 text-white font-sans font-medium py-1 px-2 rounded-md mb-2 mr-4 absolute right-0 bottom-0" disabled={isLoading}>Submit</button>
       </div>
-      <div className="grid grid-cols-4 gap-4">
+      {isLoading && <div>Loading...</div>}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-6xl">
         {data && data?.map((d, i) => {
           return (
-            <ArtistCard key={i} name={d.name} description={d.genres[0]} image={d.images[0].url} genre={d.genres[0]} />
+            <ArtistCard key={i} name={d.name} description={d.genres[0]} image={d.images[0].url} genre={d.genres[0]} artistId={d.id }/>
           )
         })}
-
       </div>
     </div>
   );

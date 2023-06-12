@@ -1,15 +1,18 @@
 import Image from "next/image"
 
-export const ArtistCard = ({ name, description, image, genre }: { name: string, description: string, image: string, genre: string }) => {
+export const ArtistCard = ({ name, description, image, genre, artistId }: { name: string, description: string, image?: string, genre: string, artistId: string }) => {
   return (
-    <a href="#" className="group relative block bg-black">
-      <Image
-        alt="Developer"
-        width="400"
-        height="400"
-        src={image}
-        className="absolute inset-0 h-full w-full object-cover opacity-75 transition-opacity group-hover:opacity-50"
-      />
+    <div className="group relative block bg-black mx-auto rounded-lg w-full">
+      {/* {
+        image && <Image
+          alt="Developer"
+          width="400"
+          height="400"
+          src={image}
+          className="absolute inset-0 h-full w-full object-cover opacity-75 transition-opacity group-hover:opacity-50 rounded-lg"
+        />
+      }
+
 
       <div className="relative p-4 sm:p-6 lg:p-8">
         <p className="text-sm font-medium uppercase tracking-widest text-pink-500">
@@ -27,7 +30,12 @@ export const ArtistCard = ({ name, description, image, genre }: { name: string, 
             </p>
           </div>
         </div>
-      </div>
-    </a>
+      </div> */}
+
+      <iframe src={`https://open.spotify.com/embed/artist/${artistId}?utm_source=generator`} width="100%" height="450" style={{
+        zIndex: "100",
+        position: "relative"
+      }} allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+    </div>
   )
 }
