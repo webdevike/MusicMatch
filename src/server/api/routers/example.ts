@@ -47,6 +47,7 @@ export const exampleRouter = createTRPCRouter({
         `${input.text} Please respond in JSON format. The key name should be "artists" the values should be an array of objects. The object should have the following values. name: string, description: string. Respond with at least 10 results if you can.`
       )
       const data = JSON.parse(res.text)
+      console.log("🚀 ~ file: example.ts:50 ~ data:", data)
 
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -65,10 +66,13 @@ export const exampleRouter = createTRPCRouter({
 
 
 
+
         return spotifyArtist;
       });
 
       const results: any[] = await Promise.all(promises);
+
+      console.log('RESULTS are here')
 
 
       return results
